@@ -33,17 +33,10 @@ resource "aws_eks_node_group" "node-grp" {
   cluster_name    = aws_eks_cluster.ankit-cluster.name
   node_group_name = "pc-node-group"
   node_role_arn   = aws_iam_role.worker.arn
-  subnet_ids      = ["${data.aws_subnets.available-subnets.ids[0]}"]
+  subnet_ids      = data.aws_subnets.available-subnets.ids
   capacity_type   = "ON_DEMAND"
   disk_size       = "8"
   instance_types  = ["t2.micro"]
- # depends_on = aws_eks_cluster.ankit-cluster
-
-  remote_access {
-    ec2_ssh_key               = "terraform"
-    source_security_group_ids = ["sg-054d324f1527f8564"]
-  }
-
   labels = tomap({ env = "dev" })
 
   scaling_config {
@@ -55,12 +48,9 @@ resource "aws_eks_node_group" "node-grp" {
   update_config {
     max_unavailable = 1
   }
-
   depends_on = [
     aws_iam_role_policy_attachment.AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly,
-    #aws_subnet.pub_sub1,
-    #aws_subnet.pub_sub2,
-    ]
+    aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly
+    ]  
 }
