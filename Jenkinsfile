@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/ankit-jagtap-devops/terraform-eks-nodegroup.git']])
+                git 'https://github.com/ankit-jagtap-devops/terraform-eks-nodegroup.git'
             }
         }
     
