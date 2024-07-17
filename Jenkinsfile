@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['apply', 'destroy'],
+            description: 'Select the action to perform'
+        )
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -22,9 +30,23 @@ pipeline {
 
         stage (" Action") {
             steps {
-                echo "Terraform action is --> ${action}"
-                sh ('terraform ${action} --auto-approve') 
-           }
+                script {
+                    switch (params.ACTION) {
+                        case 'apply':
+                            echo 'Executing Apply...'
+                            sh "terraform apply --auto-approve"
+                            break
+                        case 'destroy':
+                            echo 'Executing Destroy...'
+                            sh "terraform destroy --auto-approve"
+                            break
+                        default:
+                            error 'Unknown action'
+                    }
+                }
+            }
         }
     }
 }
+
+
